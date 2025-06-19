@@ -1,0 +1,1022 @@
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.2.5/js/dataTables.responsive.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.5/css/responsive.bootstrap4.min.css" />
+
+<style> 
+
+.highcharts-exporting-group{
+        visibility: hidden;
+    }
+
+    .highcharts-figure,
+    .highcharts-data-table table {
+    min-width: 360px;
+    max-width: 800px;
+    margin: 1em auto;
+    }
+
+    .highcharts-data-table table {
+    font-family: Verdana, sans-serif;
+    border-collapse: collapse;
+    border: 1px solid #ebebeb;
+    margin: 10px auto;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+    }
+
+    .highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+    }
+
+    .highcharts-data-table th {
+    font-weight: 600;
+    padding: 0.5em;
+    }
+
+    .highcharts-data-table td,
+    .highcharts-data-table th,
+    .highcharts-data-table caption {
+    padding: 0.5em;
+    }
+
+    .highcharts-data-table thead tr,
+    .highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+    }
+
+    .highcharts-data-table tr:hover {
+    background: #f1f7ff;
+    }
+
+ .nowrap{
+    white-space: nowrap !important;
+ }
+
+
+        /* ini untuk mengilangak scrollbar di samping */
+    .scrollbar::-webkit-scrollbar
+        {
+            width: 1px;
+            background-color: #FFFFFF;
+        }
+        .scrollbar::-webkit-scrollbar-thumb
+        {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 1px rgba(0,0,0,.9);
+            background-color: #FFFFFF;
+        }
+
+        /* end scrolbar */
+ /* unutk tabel comment mengilangkan garis head dan footer  */
+    .dataTables_scrollBody {
+            overflow-x: hidden !important;
+             
+        border-top: none !important;
+        border-bottom: none !important;
+        }
+     
+ /* end tabel comment */
+ 
+ .tanggal-icon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background-color: #ccc;
+  border-radius: 50%;
+}
+
+.tanggal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: bold;
+}
+</style>
+
+
+
+<div id="main">
+          <?php include 'views/pages/burger.php';
+            require_once ("models/dahasboard/tampildata.php");
+          ?>
+            
+
+<div class="page-content">
+    <section class="row">
+        <div class="col-12 col-lg-9">
+            <div  id="katalog" class="row">
+             
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                        </div>
+                        <div class="card-body">
+                            <div id="grafik"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                       
+                        <div class="card-body">
+                            <div id="tabelhead_sm"></div>
+                            <div id="tabelhead"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3">
+         
+            <div class="card">
+                <div class="card-header">
+                </div>
+   
+               
+                <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="tabel_comment" class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                     
+                                            <th>Name</th>
+                                            <th>Comment<button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#messageModal">
+                                            <i class="fa-regular fa-file"></i></button></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php 
+                                        $datacome = $data->get_data(); 
+                                    ?>
+                                    <?php 
+                                    $tanggal ="";
+                                     $nama ="";
+                                     $comment ="";
+                                       while(odbc_fetch_row($datacome)){
+                                            $tanggal = rtrim(odbc_result($datacome,"tanggal"));
+                                             $nama = rtrim(odbc_result($datacome,"user_name"));
+                                             $comment = rtrim(odbc_result($datacome,"comment"));
+                                        ?>
+                                             <tr>
+                                           
+                                            <td class="col-2">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="row">
+                                                    <p class="font-bold ms-3 mb-0"><?=$nama?></p>
+                                                    <p class="font-bold ms-3 mb-0"><?=date("d-F-Y",strtotime($tanggal))?></p>
+                                                    </div>
+                                                  
+                                                </div>
+                                            </td>
+                                            <td class="col-auto">
+                                                <p class=" mb-0"><?=$comment?></p>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                   
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+            </div>
+           
+        </div>
+    </section>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageModalLabel">Message</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <input type="hidden" name="id_user" id="id_user" value="<?=$rows['id_user']?>">
+        <input type="hidden" name="username" id="username" value="<?=$rows['nama']?>">
+
+        <textarea type="text" class="form-control" name="com_mesage" id="com_mesage"></textarea>
+      </div>
+      <div class="modal-footer">
+      <button type="button" class="btn btn-success" id="kirim">Kirim</button>
+        <button type="button" class="btn btn-secondary" id="close" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    $(document).ready(function(){
+        const dateya = new Date();
+        let bulan = dateya.getMonth()+1;
+        let tahun = dateya.getFullYear();
+    get_datagrafik(tahun,bulan);
+        getdata();
+ //untuk tabel sameri
+ tabel_sameri(tahun);
+      //end
+    get_header(tahun);
+        //untuk tabel comment
+$("#tabel_comment").DataTable({
+                "ordering": false,
+               "destroy":true,
+                   //dom: 'Plfrtip',
+                  scrollCollapse: true,
+                  paging:false,
+                  "bPaginate":false,
+               "bLengthChange": false,
+                  "bFilter": true,
+                  "bInfo": false,
+                  "bAutoWidth": false,
+                  dom: 'lrt',
+            "scrollY": "360px",
+            "scrollCollapse": true,
+            "initComplete": function(settings, json) {
+            $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+    }      
+  });
+
+
+  $('.dataTables_length').addClass('bs-select');
+//end 
+$("#tabel_sm").on("click","tbody tr td",function(){
+      let tahun ="";
+      let status = "";
+      let row = jQuery(this).closest('tr');
+            let columns = row.find('td'); 
+            columns.addClass('row-highlight');
+            $.each(columns, function(key, item){
+            switch(key){
+                    case 0:
+                        tahun = item.innerHTML;
+                        break;
+                    case 1:
+                        status = item.innerHTML;
+                        break;
+                      
+                    
+                    }
+            });
+            $.ajax({
+                url:'models/rpt_solusi/detail_all.php',
+                method:'POST',
+                data:{tahun:tahun,status:status},
+                dataType:'json',
+                    success:function(result){
+                    $("#tabelhead_sm").hide();
+                    $("#tabelhead").show();
+                      get_table_detail();
+                      data_detail(result)
+                    }
+                  });
+    });
+    });
+//untuk menamilkan grafik
+    function get_datagrafik(tahun,bulan){
+        $.ajax({
+                url:'models/dahasboard/get_data_grafik.php',
+                method:'POST',
+                data:{tahun:tahun,bulan:bulan},
+                dataType:'json',      
+                success:function(result){
+                  get_grafik(result,tahun)
+                }
+            });
+
+    }
+
+function get_grafik(result,tahun){
+        let text_t = 'Grafik kunjungan'+' '+ tahun;
+        Highcharts.chart('grafik', {
+        title: {
+            text: text_t,
+            align: 'center'
+        },
+        subtitle: {
+            text: '',
+            align: 'left'
+        },
+
+        yAxis: {
+            title: {
+                text: ''
+            }
+        },
+            xAxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            },
+
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+
+
+            plotOptions: {
+                    series: {
+                        cursor: 'pointer',
+                        point: {
+                            events: {
+                                click: function() {
+                                    alert ('Category: '+ this.category +', value: '+ this.y);
+                                }
+                            }
+                        }
+                    }
+        },
+    
+    //untuk get data
+            series:
+                $.each(result,function(key,value){
+                value
+                }),
+    //end get data                   
+        responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 500
+                },
+                chartOptions: {
+                    legend: {
+                        layout: 'horizontal',
+                        align: 'center',
+                        verticalAlign: 'bottom'
+                    }
+                }
+            }]
+        }
+
+    });
+
+}
+ // end grafik
+//untuk menamilkan data katalog di atas  perbulan
+function getdata(){
+             $.ajax({
+            url:'models/dahasboard/ds_kategory.php',
+            method:'POST',
+            cache: false,
+            processData: false,
+            contentType: false,
+            dataType:'json',
+     success:function(result){
+
+        const data = result.reverse();
+        let katalog =``;
+        for(let bulan_s of data){
+            console.log(data);
+            let bulans = bulan_s['bulan'];
+            let bulan_k = bulan_s['bulan_angka'];
+            let kjn = bulan_s['ttl_kunjungan'];
+            let pss = bulan_s['ttl_proses'];
+            let ssi = bulan_s['ttl_ssi'];
+            let blm_ssi = (ssi - kjn);
+            
+      
+        
+
+                     if(bulan_k == 'Januari'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                        <div class="stats-icon purple mb-2">
+                                        <i class="fa-solid fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold">${bulans}</h6>
+                                        <h6 class="font-extrabold mb-0">K.${kjn} P.${pss} S.${ssi} </h6>
+                                        <h6  id="color2" class="font-extrabold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'Februari'){
+                     
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex mb-2 justify-content-start ">
+                                    <div  class="stats-icon  mb-2">${bulan_k}</div>  
+                                                                      </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'Maret'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'April'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'Mei'){
+                        if(ssi < kjn){
+                            console.log('masuk if');
+                            $("#color").attr('style','color: red !important');
+
+                        }else{
+                            $("#color2").css("color","red");
+                        }
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6 id="color" style="color:red" class="color font-semibold text-center"> ${blm_ssi}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'Juni'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'Juli'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'Agustus'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'September'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'Oktober'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'November'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+                     if(bulans == 'Desember'){
+                        katalog +=`
+                        <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-4 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div style="color:with" class="stats-icon purple mb-2">${bulan_k}</div>
+
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                        <h6 class="text-muted font-semibold mb-4">${bulans}</h6>
+                                        <h6 class="font-semibold mb-0">K.${kjn}  &nbsp P.${pss}   &nbsp S.${ssi} </h6>
+                                        <h6  id="color2" class="font-semibold text-center"> ${blm_ssi} </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        `;
+                     }
+        
+                
+        }
+
+        $("#katalog").empty().html(katalog);  
+
+     }
+    });
+//untuk kirim data
+    $("#kirim").on("click",function(e){
+        e.preventDefault();
+        let kirim = $("#com_mesage").val();
+        let user = $("#username").val();
+        let id_user = $("#id_user").val();
+        $.ajax({
+            url:'models/dahasboard/comment.php',
+            type:'POST',
+            dataType :'json',
+            data :{user:user,kirim:kirim,user_id:id_user},
+            success:function(result){
+              
+                window.location.href ="index.php?page=home";
+            }
+        });
+    });
+// and kirim
+    $("#close").on("click",function(){
+       $("#com_mesage").val('');
+    });
+//
+
+}
+
+//untuk tampil head tabel sameri
+function get_head_sm(){
+        
+        let dataTable =`
+        <section class="section">
+                <div class="card">
+                        <div class="card-header">
+                        </div>
+                
+                    <div class="card-body">
+                    <p id="title" class="page-title">
+                    </p>
+                    <table  style="cursor:pointer" id="tabel_sm" class='display table-info' >                    
+                                    <thead  id='thead'class ='thead'>
+                                    <tr>
+                                                <th>Tahun</th>
+                                                <th>Status</th>
+                                                <th>Jumlah</th>
+    
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table><br>
+                                </div>
+                            </div>
+                        </section>
+
+        `;
+    $("#tabelhead_sm").empty().html(dataTable);
+};
+
+function tabel_sameri(tahun){
+
+    get_head_sm();
+
+    $.ajax({
+    url:'models/rpt_solusi/report_full.php',
+    method : 'POST',
+    data :{tahun:tahun},
+    dataType :'json',
+    success : function(result){
+        data_sameri(result);
+    }
+    });
+
+}
+
+
+function data_sameri(result){
+    $("#tabel_sm").DataTable({
+                    "ordering": false,
+                    "destroy":true,
+                
+            
+                    responsive: true,
+                    columnDefs: [
+                                    {
+                                        targets:[0,1,2],
+                                        className: 'board'}
+                                    ],
+                        fixedColumns:   {
+                        // left: 1,
+                            right: 1
+                        },
+                    "order":[[0,'desc']],
+                    'rowCallback': function(row, data, index){
+                        console.log(data.status)
+                        let status = data.status;
+                        if(status == "kunjungan"){
+                            $(row).find('td:eq(0)').css('color', '#0dcaf0');
+                            $(row).find('td:eq(1)').css('color', '#0dcaf0');
+                            $(row).find('td:eq(2)').css('color', '#0dcaf0');
+                        }
+                        if(status == "selesai"){
+                            $(row).find('td:eq(0)').css('color', '#20c997');
+                            $(row).find('td:eq(1)').css('color', '#20c997');
+                            $(row).find('td:eq(2)').css('color', '#20c997');
+                        }
+                        if(status == "proses"){
+                            $(row).find('td:eq(0)').css('color', '#6610f2');
+                            $(row).find('td:eq(1)').css('color', '#6610f2');
+                            $(row).find('td:eq(2)').css('color', '#6610f2');
+                        }
+                        // let target = data.target
+                    
+                        // let tdk_target=data.tidak_target;
+                    
+                        // if(tdk_target< target){
+                        //     $(row).find('td:eq(5)').css('color', 'red');
+                        // }else{
+                        // $(row).find('td:eq(5)').css('color', 'black');
+
+                        // }
+                    
+                    },
+                        data: result,
+                        pageLength: 5,
+                        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'Todos']],
+                            
+                
+                            columns: [
+                            { 'data': 'tahun' },
+                            { 'data': 'status' },
+                            { 'data': 'jumlah' },
+                        
+                            
+                            ]      
+                
+            });
+        
+}
+//end tampil head sameri
+
+//fungsi untuk menamilkan data detail
+function data_detail(result){
+
+         // let titles =`<h1 style="text-align:center;color:black;">Data Report Kunjungan ${tahun}</h1>`;
+
+          $("#tabel1").DataTable({
+            responsive: true,
+
+                "ordering": false,
+                "destroy":true,
+                //dom: 'Bfrtip',
+                paging:true,
+                    autoWidth: false,
+                                    columnDefs: [
+                                    {
+                                        targets:[0,1,2,3,4,5,6,7,8,9],
+                                        className: 'nowrap'}
+                                    ],
+                "order":[[0,'desc']],
+                
+                    data: result,
+                    pageLength: 5,
+                    lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']],
+                        columns: [
+                          { 'data': 'tanggal' },
+                          { 'data': 'jenis_ktg' },
+                          { 'data': 'peserta' },
+                            { 'data': 'tujuan' },
+                            { 'data': 'temuan' },
+                            { 'data': 'ket' },
+                            { 'data': 'tanggal_proses',
+                                "render":function(data,type,row){
+                                   
+                                   if(data == "01-01-70"){
+                                       let d = null
+                                       return d;
+                                   }else{
+                                      
+                                       return data
+                                   }
+                               }
+                            },
+                            { 'data': 'ket_proses' },
+                            { 'data': 'tanggal_selesai',
+                                "render":function(data,type,row){
+                                   
+                                if(data == "01-01-70"){
+                                    let d = null
+                                    return d;
+                                }else{
+                                   
+                                    return data
+                                }
+                            }
+                            },
+                            { 'data': 'ket_selesai' },
+
+                            
+                          
+
+                            // { "render": function (data, type) { 
+                            //   // Tampilkan kolom aksi
+                             
+                            //   let html  ='<button type="button"  class=" solusi btn btn-primary btn-sm btn-space">solusi<i class="fa-solid fa-pencil"></i></button>'
+
+                            // // html += '<button type="button" class=" open-delete  btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fa-solid fa-remove"></i></button>'
+                            // return html;
+                            //  }
+                            // },
+
+                         
+                        ]      
+            
+          });
+       
+}
+
+
+//end data detail
+function get_rpt_solusi(tahun,bulan){
+    $("#editdata").hide();
+    get_header(tahun);
+    get_tables();
+    let dataTable =``;
+    let image1 ='';
+    let image2 ='';
+    let image3 ='';
+    let image4 ='';
+    let id_kunjungan = '';
+    let myData ={};
+    let data ={};
+    $.ajax({
+            url:'models/rpt_solusi/rpt_kunjungan.php',
+            method:'POST',
+            data:{tahun:tahun,bulan:bulan},
+            dataType:'json',      
+            success:function(result){
+            let titles =`<h1 style="text-align:center;color:black;">Data Report Kunjungan ${tahun}</h1>`;
+
+            $("#tabel1").DataTable({
+                    "ordering": false,
+                    "destroy":true,
+                    dom: 'Bfrtip',
+                    paging:true,
+                    buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                    buttons: [
+                        {extend: 'print',
+                                    text: '<h6><i class="fa-solid fa-print fa-lg text-secondary"></i></h6>',
+                                    messageTop: function () {
+                                        return titles ;
+                                    },
+                                    title:" "
+                        },
+                
+                    ],
+                        fixedColumns:   {
+                        // left: 1,
+                            right: 1
+                        },
+                    "order":[[0,'desc']],
+                    
+                        data: result,
+                        pageLength: 5,
+                        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'Todos']],
+                            columns: [
+                            { 'data': 'tanggal' },
+                            { 'data': 'id_kunjungan' },
+                                { 'data': 'tujuan' },
+                                { 'data': 'temuan' },
+                                { 'data': 'tanggal_proses' },
+                                { 'data': 'ket_proses' },
+                                { 'data': 'tanggal_selesai' },
+                                { 'data': 'ket_selesai' },
+
+                                
+                            
+
+                                // { "render": function (data, type) { 
+                                //   // Tampilkan kolom aksi
+                                
+                                //   let html  ='<button type="button"  class=" solusi btn btn-primary btn-sm btn-space">solusi<i class="fa-solid fa-pencil"></i></button>'
+
+                                // // html += '<button type="button" class=" open-delete  btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fa-solid fa-remove"></i></button>'
+                                // return html;
+                                //  }
+                                // },
+
+                            
+                            ]      
+                
+            });
+        
+        }
+});      
+
+
+};  
+
+
+
+function get_header(tahun){
+    let data_headr =`
+    <h5 class="text-center">Data Kunjungan ${tahun}</h5>
+    `;
+    $("#title").html(data_headr);
+}
+
+function get_table_detail(){
+  //   let id ="#"+tabel;
+  //   let substr_bulan = bulan.substr(0,3);
+      let dataTable =`
+      <section class="section">
+              <div class="card">
+                  <div class="card-body">
+                  <button onclick="goBack2()" class="btn btn-lg mb-2"><i class="fa-solid fa-arrow-left"></i></button>
+                  <table id="tabel1" class='display table-info' >                    
+                                  <thead  id='thead'class ='thead'>
+                                  <tr>
+                                              <th>Tgl kunjungan</th>
+                                              <th>Jenis Kunjungan</th>
+                                              <th>Peserta</th>
+                                              <th>Tujuan</th>
+                                              <th>Temuan</th>
+                                              <th>Keterangan</th>
+                                              <th>Tanggal Proses</th>
+                                              <th>Keterangan Proses</th>
+                                              <th>Tanggal Selesai</th>
+                                              <th>Keterangan Selesai</th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                  </tbody>
+                              </table><br>
+                              </div>
+                          </div>
+                      </section>
+
+      `;
+  $("#tabelhead").empty().html(dataTable);
+};
+
+function goBack2() {
+        $("#tabelhead_sm").show();
+      $("#tabelhead").hide();
+    
+    }
+ </script>
+
+
+
+
+
+            <footer>
+                <div class="footer clearfix mb-0 text-muted">
+                    <div class="float-start">
+                        <p>2023&copy; </p>
+                    </div>
+                    <div class="float-end">
+                        <p>Crafted with <span class="text-danger"><i class="bi bi-heart"></i></span> by <a
+                                href="https://saugi.me">bambfile</a></p>
+                    </div>
+                </div>
+            </footer>
+        </div>
